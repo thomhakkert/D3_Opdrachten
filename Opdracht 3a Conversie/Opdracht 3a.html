@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<link href="src/nv.d3.css" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+  overflow-y:scroll;
+}
+
+text {
+  font: 12px sans-serif;
+}
+
+#chart1 svg {
+  height: 500px;
+  margin: 10px;
+  min-width: 100px;
+  min-height: 100px;
+/*
+  Minimum height and width is a good idea to prevent negative SVG dimensions...
+  For example width should be =< margin.left + margin.right + 1,
+  of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
+*/
+}
+
+</style>
+</head>
+<body>
+	<center>
+	<h2>Conversie en ConversieRatio's Blue Mango</h2>
+	<p>
+	Hieronder zie je de conversie en conversieratio's van het bedrijf Blue Mango.<br>
+	Het is gemeten gedurende 26 weken. Waarbij de lijn de conversie is en de staven de ratio's.	
+	</p>
+	</center>
+	
+  <div id="chart1" class='with-3d-shadow with-transitions'>
+    <svg> </svg>
+  </div>
+
+<script src="jquery-2.0.3.min.js"></script>  
+<script src="lib/d3.v3.js"></script>
+<script src="nv.d3.js"></script>
+<script src="src/utils.js"></script>
+<script src="src/tooltip.js"></script>
+<script src="src/models/legend.js"></script>
+<script src="src/models/axis.js"></script>
+<script src="src/models/scatter.js"></script>
+<script src="src/models/line.js"></script>
+<script src="src/models/historicalBar.js"></script>
+<script src="src/models/linePlusBarChart.js"></script>
+<script>
+
+var testdata = [
+  {
+    "key" : "Conversie Ratio" ,
+    "bar": true,
+    "values" : [ [ 1 , 8] , [ 2 , 10] , [ 3 , 10] , [ 4 , 11] , [ 5 , 12] , [ 6 , 14] , [ 7 , 8] , [ 8 , 9] , [ 9 , 18] , [ 10 , 10] , [ 11 , 19] , [ 12 , 10] , [ 13 , 9] , [ 14 , 7] , [ 15 , 9] , [ 16 , 10] , [ 17 , 11] , [ 18 , 15] , [ 19 , 14] , [ 20 , 17] , [ 21 , 13] , [ 22 , 15] , [ 23 , 9] , [ 24 , 10] , [ 25 , 16] , [ 26 , 8]]
+  },
+  {
+    "key" : "Conversie per week" ,
+    "values" : [ [ 1 , 10382] , [ 2 , 12588] , [ 3 , 11238] , [ 4 , 8394] , [ 5 , 13033] , [ 6 , 12837] , [ 7 , 9242] , [ 8 , 11212] , [ 9 , 12324] , [ 10 , 11852] , [ 11 , 13148] , [ 12 , 13145] , [ 13 , 13263] , [ 14 , 10098] , [ 15 , 8175] , [ 16 , 10951] , [ 17 , 12773] , [ 18 , 13456] , [ 19 , 9705] , [ 20 , 12316] , [ 21 , 9642] , [ 22 , 11403] , [ 23 , 10508] , [ 24 , 11274] , [ 25 , 13562] , [ 26 , 8971]]
+  }
+].map(function(series) {
+  series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
+  return series;
+}); 
+
+
+/*
+//For testing single data point
+var testdata = [
+  {
+    "key" : "Quantity" ,
+    "bar": true,
+    "values" : [ [ 1136005200000 , 1271000.0] ]
+  } ,
+  {
+    "key" : "Price" ,
+    "values" : [ [ 1136005200000 , 71.89] ]
+  }
+].map(function(series) {
+  series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
+  return series;
+});
+*/
+
+var chart;
+
+nv.addGraph(function() {
+    chart = nv.models.linePlusBarChart()
+        .margin({top: 30, right: 60, bottom: 50, left: 70})
+        .x(function(d,i) { return i })
+        .color(d3.scale.category10().range());
+
+    chart.xAxis.tickFormat(function(d) {
+      var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
+      return dx
+      })
+      .showMaxMin(false);
+
+    chart.y1Axis
+        .tickFormat(d3.format(',f'));
+
+    chart.y2Axis
+        .tickFormat(function(d) { return (d) });
+
+    chart.bars.forceY([0]).padData(false);
+    //chart.lines.forceY([0]);
+
+    d3.select('#chart1 svg')
+        .datum(testdata)
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+    return chart;
+});
+
+</script>
+
+<div id="footer" style="font-size:10px; text-align:left;">
+Bron: Blue Mango
+</div>
+
+</body>
+
+</html>

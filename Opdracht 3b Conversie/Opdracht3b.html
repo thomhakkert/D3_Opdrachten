@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A/B Test</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" >
+  </head>
+  <body>
+	<center>
+	<h2>A/B Test</h2>
+	<p>Hieronder zie je de resultaten van de A/B test voor het bedrijf Blue Mango</p>
+    <div id="wrapper">
+      <div id="column"></div>
+      <div id="columnc1"></div>
+      <div id="dag"></div>
+      <div id="columnc2"></div>
+      <div id="column2"></div>
+    </div>
+	</center>
+	<script>
+	
+var visitsA = [];
+    visitsB = [];
+    conversiesA = [];
+    conversiesB = [];
+    dayA = [];
+        
+$.each(dayA, function(i){
+  $('chart').append(i.Day);
+  $('chart2').append(i.Day);
+});
+ 
+d3.csv("data.csv", function(loadedRows) {
+  rows = loadedRows;
+  handleLoadedRows();
+})
+
+//deze functie doet alles in de arrays die bovenaan gedefinieerd staan 
+function handleLoadedRows() {
+  $.each(rows, function(i,item){
+    if (item.Version == "A") dayA.push(parseFloat(item.Day));
+    if (item.Version == "A") visitsA.push(parseFloat(item.Visit));
+    if (item.Version == "A") conversiesA.push(parseFloat(item.Conversies));
+    if (item.Version == "B") visitsB.push(parseFloat(item.Visit));
+    if (item.Version == "B") conversiesB.push(parseFloat(item.Conversies));
+  });
+ 
+  makeChart();
+}
+ 
+ 
+function makeChart(dataSet){
+  var visitsMax = d3.max(visitsA);
+  var visitsMin = d3.min(visitsA);
+  var conversiesMax = d3.max(conversiesA);
+  var conversiesMin = d3.min(conversiesA);
+ 
+  //Dit is het kleurenspectrum
+  var depthColors = d3.scale.linear()
+      .domain([visitsMin, visitsMax])
+      .range(["#2E16B1", "#FFCB00"] )
+	  
+  //Hier worden de variabelen gedefinieerd
+  var height = 30,
+      height2 = 9,
+      width = 300,
+      width2 = 50
+      margin = 4;
+	  
+  //Hier worden de divs geselecteerd waar de grafiek geplaatst wordt en worden daar wat attributen aan gegeven
+  var chart = d3.select("#column")
+      .append("svg:svg")//voegt een SVG toe
+      .attr("width", width)//De breedte
+      .attr("height", (height+margin) * visitsA.length)//De hoogte
+      .attr("class", "chart");//geeft het een class genaamd chart
+ 
+  var chartcb = d3.select("#columnc2")
+      .append("svg:svg")
+      .attr("width", width2)
+      .attr("height", (height+margin) * conversiesB.length)
+      .attr("class", "chartcb");
+ 
+  var chartca = d3.select("#columnc1")
+      .append("svg:svg")
+      .attr("width", width2)
+      .attr("height", (height+margin) * conversiesA.length)
+      .attr("class", "chartca");
+ 
+  var chart2 = d3.select("#column2")
+      .append("svg:svg")
+      .attr("width", width)
+      .attr("height", (height+margin) * visitsB.length)
+      .attr("class", "chart2");
+ 
+  var chart3 = d3.select("#dag")
+      .append("svg:svg")
+      .attr("width", width2)
+      .attr("height", (height+margin) * dayA.length)
+      .attr("class", "chart3");
+ 
+  var x = d3.scale.linear()
+      .domain([0, d3.max(visitsA)])
+      .range([0, width]);
+ 
+  var y = d3.scale.linear()
+      .domain([0, d3.max(visitsA)])
+      .rangeRound([0, width]);
+  var y2 = d3.scale.linear()
+      .domain([0, d3.max(conversiesA)])
+      .rangeRound([0, width2]);
+	  
+  //hier voegt hij de staven toe
+  chart.selectAll("rect")
+      .data(visitsA)
+      .enter().append("rect")
+      .attr("x", function(d, i) {return y(visitsMax)-y(visitsA[i])})
+      .attr("y", function(d, i) { return i * (height + margin);})
+      .attr("width", function(d) { return y(d);})
+      .attr("height", height)
+      .attr("fill", function(d, i) { 
+        if(visitsA[i] > visitsB[i]) {
+          return "#FFCB00";}
+        if (visitsA[i] < visitsB[i]) {
+          return "#2E16B1";}
+        else {
+          return "#8A7E24";}
+        }
+      );
+ 
+  chart2.selectAll("rect")
+      .data(visitsB)
+      .enter().append("rect")
+      .attr("x", function(d, i) {0})
+      .attr("y", function(d, i) { return i * (height + margin);})
+      .attr("width", function(d) { return y(d);})
+      .attr("height", height)
+      .attr("fill", function(d, i) { 
+        if(visitsB[i] > visitsA[i]) {
+          return "#FFCB00"; }
+        if (visitsB[i] < visitsA[i]) {
+          return "#2E16B1"; }
+        else {
+          return "#8A7E24";}
+        }
+      );
+ 
+  chartca.selectAll("rect")
+      .data(conversiesA)
+      .enter().append("rect")
+      .attr("x", function(d, i) {0})
+      .attr("y", function(d, i) { return i * (height + margin);})
+      .attr("width", function(d) { return y2(d);})
+      .attr("height", height)
+      .attr("fill", function(d, i) { 
+        if(conversiesA[i] > conversiesB[i]) {
+          return "#FFCB00"; }
+        if (conversiesA[i] < conversiesB[i]) {
+          return "#2E16B1"; }
+        else {
+          return "#8A7E24";}
+        }
+      );
+ 
+  chartcb.selectAll("rect")
+      .data(conversiesB)
+      .enter().append("rect")
+      .attr("x", function(d, i) { return y2(conversiesMax)-y2(conversiesB[i])})
+      .attr("y", function(d, i) { return i * (height + margin);})
+      .attr("width", function(d) { return y2(d);})
+      .attr("height", height)
+      .attr("fill", function(d, i) { 
+        if(conversiesB[i] > conversiesA[i]) {
+          return "#FFCB00"; }
+        if (conversiesB[i] < conversiesA[i]) {
+          return "#2E16B1"; }
+        else {
+          return "#8A7E24";}
+        }
+      );
+  //Hier wordt text toegevoegd
+  chart.selectAll("text")
+      .data(visitsA)
+      .enter()
+      .append("text")
+      .attr("text-anchor", "end")
+      .text(function(d){ return d; })
+      .attr("x", function(d) { return width; })
+      .attr("y", function(d, i) { return (i*(height+margin))+((height/2)+margin); })
+      .attr("fill", "#000")
+      .attr("align", "right")
+      .attr("dx", -3);
+ 
+  chart2.selectAll("text")
+      .data(visitsB)
+      .enter()
+      .append("text")
+      .attr("text-anchor", "start")
+      .text(function(d){ return d; })
+      .attr("x", function(d) { return 0 + margin; })
+      .attr("y", function(d, i) { return (i*(height+margin))+((height/2)+margin); })
+      .attr("fill", "#000");
+ 
+  chartca.selectAll("text")
+      .data(conversiesA)
+      .enter()
+      .append("text")
+      .attr("text-anchor", "start")
+      .text(function(d){ return d; })
+      .attr("x", function(d) {0})
+      .attr("y", function(d, i) { return (i*(height+margin))+((height/2)+margin); })
+      .attr("fill", "#000")
+      .attr("align", "right")
+      .attr("dx", 2);
+ 
+  chartcb.selectAll("text")
+      .data(conversiesB)
+      .enter()
+      .append("text")
+      .attr("text-anchor", "end")
+      .text(function(d){ return d; })
+      .attr("x", function(d) { return width2; })
+      .attr("y", function(d, i) { return (i*(height+margin))+((height/2)+margin); })
+      .attr("fill", "#000");
+ 
+ 
+  chart3.selectAll("week")
+      .data(dayA)
+      .enter()
+      .append("text")
+      .text(function(d, i){ return "dag "+dayA[i]; })
+      .attr("x", function(d) { return (x(d)); }) 
+      .attr("y", function(d, i) { return (i*(height+margin))+((height/2)+margin); })
+      .attr("dx", 8)
+      .attr("fill", "#000")
+	  .attr("font-weight", "bold")
+      .attr("align", "center");
+}
+	
+	</script>
+	
+	<div id="footer" style="font-size:10px; margin-top:600px;">
+	<p>Bron: Blue Mango</p>
+	</div>
+	
+  </body>
+</html>

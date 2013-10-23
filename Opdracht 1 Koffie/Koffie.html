@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="src/nv.d3.css" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+  overflow-y:scroll;
+}
+
+text {
+  font: 12px sans-serif;
+}
+
+#chart1 {
+  margin: 10px;
+  min-width: 100px;
+  min-height: 100px;
+/*
+  Minimum height and width is a good idea to prevent negative SVG dimensions...
+  For example width should be =< margin.left + margin.right + 1,
+  of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
+*/
+}
+
+#chart1 svg {
+  height: 500px;
+}
+
+#kopje {
+	text-align:center;
+	width:500px;
+	color:#000;
+}
+
+#footer {
+	font-size:10px;
+	text-align:left;
+	margin-top:10px;
+}
+
+</style>
+<body>
+<center>
+<div id="kopje">
+	<h2>Koffiegebruik Blue Mango</h2>
+		<p>
+		Het gerucht ging bij Blue Mango dat het rechter koffiezetapparaat betere koffie maakte als de linker.
+		Daardoor zou er bij de rechterautomaat meer besteld worden.
+		Toen hebben ze daar data van verzameld en zie hier het resultaat.
+		</p>
+</div></center>
+		
+  <div id="chart1" class='with-3d-shadow with-transitions'>
+    <svg></svg>
+  </div>
+
+<script src="d3.js"></script>
+<script src="nv.d3.js"></script>
+<script src="src/utils.js"></script>
+<script src="src/tooltip.js"></script>
+<script src="src/models/legend.js"></script>
+<script src="src/models/axis.js"></script>
+<script src="src/models/multiBarHorizontal.js"></script>
+<script src="src/models/multiBarHorizontalChart.js"></script>
+<script>
+
+
+
+long_short_data = [ 
+  {
+    key: 'Linker Apparaat',
+    color: '#d62728',
+    values: [
+      { 
+        "label" : "Koffie" ,
+        "value" : 63
+      } , 
+      { 
+        "label" : "Espresso" ,
+        "value" : 36
+      } , 
+      { 
+        "label" : "Cappuccino" ,
+        "value" : 31
+      } , 
+      { 
+        "label" : "Warme Chocomel" ,
+        "value" : 9
+      } , 
+      {
+        "label" : "Warm Water" ,
+        "value" : 0
+      } , 
+      { 
+        "label" : "Overig" ,
+        "value" : 9
+      }
+    ]
+  },
+  {
+    key: 'Rechter Apparaat',
+    color: '#1f77b4',
+    values: [
+      { 
+        "label" : "Koffie" ,
+        "value" : 144
+      } , 
+      { 
+        "label" : "Espresso" ,
+        "value" : 88
+      } , 
+      { 
+        "label" : "Cappuccino" ,
+        "value" : 31
+      } , 
+      { 
+        "label" : "Warme Chocomel" ,
+        "value" : 4
+      } , 
+      {
+        "label" : "Warm Water" ,
+        "value" : 2
+      } , 
+      { 
+        "label" : "Overig" ,
+        "value" : 20
+      }
+    ]
+  }
+];
+
+var chart;
+nv.addGraph(function() {
+  chart = nv.models.multiBarHorizontalChart()
+      .x(function(d) { return d.label })
+      .y(function(d) { return d.value })
+      .margin({top: 30, right: 20, bottom: 50, left: 175})
+      .barColor(d3.scale.category20().range())
+      .transitionDuration(250)
+      .stacked(false)
+
+  chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+  d3.select('#chart1 svg')
+      .datum(long_short_data)
+      .call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+  return chart;
+});
+
+
+
+</script>
+	<div id="footer"> 
+       		<p>Bron: Blue Mango</p>
+    </div>
+</body>

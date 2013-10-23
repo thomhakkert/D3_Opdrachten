@@ -1,0 +1,49 @@
+/*CSS-Reset*/
+html, body, div, span, applet, object, iframe,
+h1, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, font, img, ins, kbd, q, s, samp,
+small, strike, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {color: #000; margin: 20; padding: 0; border: 0; outline: 0; font-weight: inherit; font-style: inherit; font-size: 11px; font-family: 'Karla', sans-serif; }
+/* remember to define focus styles! */
+:focus {outline: 0; }
+body {line-height: 1; color: black; background: #ffb773;}
+ol, ul {list-style: none;}
+/* tables still need 'cellspacing="0"' in the markup */
+table {border-collapse: separate; border-spacing: 0;}
+caption, th, td { text-align: left; font-weight: normal;}
+blockquote:before, blockquote:after,
+q:before, q:after {content: "";}
+blockquote, q {quotes: "" "";}
+ 
+.alignleft { float: left; }
+.alignright { float: right; }
+.clear { clear: both; }
+/*Website*/
+#column{ padding: 3px; margin: 0px ; border: 0px dashed #ddd; width: 300px; float: left;  }
+#column2{ padding: 3px; margin: 0px ; border: 0px dashed #ddd; width: 300px; float: left;  }
+ 
+#dag{ padding-top: 3px; margin: 0px ; border: 0px dashed #ddd; width: 50px; float: left;  }
+ 
+#columnc1{ padding: 3px; margin: 0px ; border: 0px dashed #ddd; width: 50px; float: left;  }
+#columnc2{ padding: 3px; margin: 0px ; border: 0px dashed #ddd; width: 50px; float: left;  }
+ 
+svg rect:hover{ opacity: 0.5; }
+.chart div{ background: #ff0000; float: right; clear: left; top: 5;}
+.chart2 div{ background: #ff0000; float: right; clear: right; top: 5;}
+.chartca div{ background: #ff0000; float: right; clear: left; top: 5;}
+.chartcb div{ background: #ff0000; float: right; clear: left; top: 5;}
+.chart3 div{ background: #ff0000; float: right; text-align: center;}
+ 
+h1 {
+	font-size: 20px;
+}
+ 
+#wrapper {
+	text-align:center;
+    width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+}
