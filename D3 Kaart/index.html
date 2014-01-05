@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Minor Data Beleving D3 Lessen</title>
+	<script src="d3.v3.js"></script>
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<h1>De Kaart van Europa in D3</h1>
+	<script type="text/javascript">
+		//Breedte en Hoogte
+		var w = 1000;
+		var h = 600;
+		
+		//Wat voor projectie
+		var projection = d3.geo.mercator()
+						   .translate([400,800])
+						   .scale([2500]);
+								   
+		var path = d3.geo.path()
+			.projection(projection);
+
+		//Maak een vector element aan
+		var svg = d3.select("body")
+					.append("svg")
+					.attr("width", w)
+					.attr("height", h);
+				
+		//Geodata inladen
+		d3.json("eucountries.json", function(json) {
+			
+			svg.selectAll("path")
+			   .data(json.features)
+			   .enter()
+			   .append("path")
+			   .attr("d", path)
+			   .style("fill", function() {return d3.rgb(250, 180, 17);} )
+			   .style("stroke", "black");
+	
+		});
+	</script>
+    
+    <footer>
+    	<p>Bron: <a href="http://www.datagraaf.nl">De Datagraaf</a></p>
+        <p>Mede mogelijk gemaakt door: Wim van Gelderen</p>
+    </footer>
+</body>
+</html>
